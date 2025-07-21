@@ -106,6 +106,7 @@ function Home({user}) {
                         <div className="video-card" key={video.id}>
                             <h3>{video.activity_name}</h3>
                             <p className="upload-date">{new Date(video.upload_date).toLocaleString()}</p>
+                            <p className="video-owner">{video.video_owner}</p>
                             <div className="video-wrapper">
                                 <video width="100%" controls preload="metadata">
                                     <source src={video.file_url} type="video/mp4"/>

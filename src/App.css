@@ -184,6 +184,19 @@ main.container {
     object-fit: cover;
 }
 
+.video-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8rem;
+    color: #999;
+    margin-bottom: 0.5rem;
+}
+
+.image-owner {
+    font-style: italic;
+}
+
 /* ====== Utility Text ====== */
 .no-videos,
 .login-required {
