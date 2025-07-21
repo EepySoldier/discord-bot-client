@@ -11,7 +11,7 @@ export default function Settings({ user }) {
     useEffect(() => {
         if (!user) return;
 
-        axios.get('http://localhost:5000/api/servers/owned', { withCredentials: true })
+        axios.get('discord-bot-server-production.up.railway.app/api/servers/owned', { withCredentials: true })
             .then(res => setOwnedServers(res.data))
             .catch(() => setOwnedServers([]));
     }, [user]);
@@ -21,7 +21,7 @@ export default function Settings({ user }) {
 
         try {
             const res = await axios.post(
-                `http://localhost:5000/api/servers/${selectedServer.discord_server_id}/create-code`,
+                `discord-bot-server-production.up.railway.app/api/servers/${selectedServer.discord_server_id}/create-code`,
                 {},
                 { withCredentials: true }
             );
@@ -39,7 +39,7 @@ export default function Settings({ user }) {
         }
         try {
             await axios.post(
-                `http://localhost:5000/api/servers/join`,
+                `discord-bot-server-production.up.railway.app/api/servers/join`,
                 { access_code: joinCode.trim() },
                 { withCredentials: true }
             );

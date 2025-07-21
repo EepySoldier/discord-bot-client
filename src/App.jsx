@@ -30,7 +30,7 @@ function Header({ user, onLogout }) {
                         </button>
                     </>
                 ) : (
-                    <button className="btn login-btn" onClick={() => window.location.href = "http://localhost:5000/auth/discord"}>
+                    <button className="btn login-btn" onClick={() => window.location.href = "discord-bot-server-production.up.railway.app/auth/discord"}>
                         Login with Discord
                     </button>
                 )}
@@ -51,7 +51,7 @@ function Home({ user }) {
             return;
         }
         // Fetch servers user joined
-        axios.get('http://localhost:5000/api/servers/joined', { withCredentials: true })
+        axios.get('discord-bot-server-production.up.railway.app/api/servers/joined', { withCredentials: true })
             .then(res => setJoinedServers(res.data))
             .catch(() => setJoinedServers([]));
     }, [user]);
@@ -63,7 +63,7 @@ function Home({ user }) {
         }
 
         // Fetch videos only if user joined at least one server
-        axios.get(`http://localhost:5000/api/videos?sort=${sortOrder}`, { withCredentials: true })
+        axios.get(`discord-bot-server-production.up.railway.app/api/videos?sort=${sortOrder}`, { withCredentials: true })
             .then(res => {
                 if (Array.isArray(res.data)) setVideos(res.data);
                 else setVideos([]);
@@ -118,7 +118,7 @@ function App() {
 
     const fetchUser = async () => {
         try {
-            const res = await axios.get('http://localhost:5000/api/user', { withCredentials: true });
+            const res = await axios.get('discord-bot-server-production.up.railway.app/api/user', { withCredentials: true });
             setUser(res.data);
         } catch {
             setUser(null);
@@ -131,7 +131,7 @@ function App() {
 
     const handleLogout = async () => {
         try {
-            await axios.post('http://localhost:5000/api/logout', null, { withCredentials: true });
+            await axios.post('discord-bot-server-production.up.railway.app/api/logout', null, { withCredentials: true });
             setUser(null);
         } catch (err) {
             console.error("Logout failed", err);
