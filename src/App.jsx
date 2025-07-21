@@ -1,27 +1,33 @@
-import { useEffect, useState } from "react";
+import {useEffect, useState} from "react";
 import axios from "axios";
-import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from "react-router-dom";
+import {BrowserRouter as Router, Routes, Route, Link, useNavigate} from "react-router-dom";
 import Settings from "./Settings";
 import "./App.css";
 
-function Header({ user, onLogout }) {
+function Header({user, onLogout}) {
     return (
         <nav className="navbar">
             <div className="navbar-left">
-                <Link to="/" className="logo-link" style={{ textDecoration: "none", color: "inherit" }}>
+                <Link to="/" className="logo-link" style={{textDecoration: "none", color: "inherit"}}>
                     <h1>🎥 Clip Archive</h1>
                 </Link>
             </div>
             <div className="navbar-right">
                 {user ? (
                     <>
-                        <Link to="/settings" className="user-info" style={{ display: "flex", alignItems: "center", gap: "8px", textDecoration: "none", color: "inherit" }}>
+                        <Link to="/settings" className="user-info" style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "8px",
+                            textDecoration: "none",
+                            color: "inherit"
+                        }}>
                             <img
                                 src={`https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`}
                                 alt="avatar"
                                 width={32}
                                 height={32}
-                                style={{ borderRadius: "50%" }}
+                                style={{borderRadius: "50%"}}
                             />
                             <span>{user.username}</span>
                         </Link>
@@ -30,7 +36,8 @@ function Header({ user, onLogout }) {
                         </button>
                     </>
                 ) : (
-                    <button className="btn login-btn" onClick={() => window.location.href = "https://discord-bot-server-production.up.railway.app/auth/discord"}>
+                    <button className="btn login-btn"
+                            onClick={() => window.location.href = "https://discord-bot-server-production.up.railway.app/auth/discord"}>
                         Login with Discord
                     </button>
                 )}
@@ -39,7 +46,7 @@ function Header({ user, onLogout }) {
     );
 }
 
-function Home({ user }) {
+function Home({user}) {
     const [videos, setVideos] = useState([]);
     const [sortOrder, setSortOrder] = useState("desc");
     const [joinedServers, setJoinedServers] = useState([]);
@@ -51,7 +58,7 @@ function Home({ user }) {
             return;
         }
         // Fetch servers user joined
-        axios.get('https://discord-bot-server-production.up.railway.app/api/servers/joined', { withCredentials: true })
+        axios.get('https://discord-bot-server-production.up.railway.app/api/servers/joined', {withCredentials: true})
             .then(res => setJoinedServers(res.data))
             .catch(() => setJoinedServers([]));
     }, [user]);
@@ -63,7 +70,7 @@ function Home({ user }) {
         }
 
         // Fetch videos only if user joined at least one server
-        axios.get(`https://discord-bot-server-production.up.railway.app/api/videos?sort=${sortOrder}`, { withCredentials: true })
+        axios.get(`https://discord-bot-server-production.up.railway.app/api/videos?sort=${sortOrder}`, {withCredentials: true})
             .then(res => {
                 if (Array.isArray(res.data)) setVideos(res.data);
                 else setVideos([]);
@@ -99,10 +106,12 @@ function Home({ user }) {
                         <div className="video-card" key={video.id}>
                             <h3>{video.activity_name}</h3>
                             <p className="upload-date">{new Date(video.upload_date).toLocaleString()}</p>
-                            <video width="100%" controls preload="metadata">
-                                <source src={video.file_url} type="video/mp4" />
-                                Your browser does not support the video tag.
-                            </video>
+                            <div className="video-wrapper">
+                                <video width="100%" controls preload="metadata">
+                                    <source src={video.file_url} type="video/mp4"/>
+                                    Your browser does not support the video tag.
+                                </video>
+                            </div>
                         </div>
                     ))
                 ) : (
@@ -118,7 +127,7 @@ function App() {
 
     const fetchUser = async () => {
         try {
-            const res = await axios.get('https://discord-bot-server-production.up.railway.app/api/user', { withCredentials: true });
+            const res = await axios.get('https://discord-bot-server-production.up.railway.app/api/user', {withCredentials: true});
             setUser(res.data);
         } catch {
             setUser(null);
@@ -131,7 +140,7 @@ function App() {
 
     const handleLogout = async () => {
         try {
-            await axios.post('https://discord-bot-server-production.up.railway.app/api/logout', null, { withCredentials: true });
+            await axios.post('https://discord-bot-server-production.up.railway.app/api/logout', null, {withCredentials: true});
             setUser(null);
         } catch (err) {
             console.error("Logout failed", err);
@@ -140,11 +149,11 @@ function App() {
 
     return (
         <Router>
-            <Header user={user} onLogout={handleLogout} />
+            <Header user={user} onLogout={handleLogout}/>
             <main className="container">
                 <Routes>
-                    <Route path="/" element={<Home user={user} />} />
-                    <Route path="/settings" element={<Settings user={user} />} />
+                    <Route path="/" element={<Home user={user}/>}/>
+                    <Route path="/settings" element={<Settings user={user}/>}/>
                 </Routes>
             </main>
         </Router>
