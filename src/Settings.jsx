@@ -7,6 +7,7 @@ export default function Settings({ user }) {
     const [createCode, setCreateCode] = useState("");
     const [selectedServer, setSelectedServer] = useState(null);
     const [message, setMessage] = useState("");
+    const [joinedServers, setJoinedServers] = useState([]);
 
     useEffect(() => {
         if (!user) return;
@@ -14,6 +15,10 @@ export default function Settings({ user }) {
         axios.get('http://localhost:5000/api/servers/owned', { withCredentials: true })
             .then(res => setOwnedServers(res.data))
             .catch(() => setOwnedServers([]));
+
+        axios.get('http://localhost:5000/api/servers/joined', { withCredentials: true })
+            .then(res => setJoinedServers(res.data))
+            .catch(() => setJoinedServers([]));
     }, [user]);
 
     const handleCreateCode = async () => {
@@ -98,6 +103,10 @@ export default function Settings({ user }) {
                 />
                 <button onClick={handleJoinServer}>Join</button>
             </div>
+            <h3>Servers you've joined already</h3>
+            {joinedServers.map(serverEntry => (
+                <span key={serverEntry.name}>{serverEntry.name} ({serverEntry.access_code})</span>
+            ))}
 
             {message && <p>{message}</p>}
         </div>
