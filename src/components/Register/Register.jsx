@@ -1,11 +1,25 @@
-import { useState } from "react";
+import "./Register.css";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Register({ onRegister }) {
-    const [email, setEmail] = useState("");
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
+    const API_SERVER_URL = import.meta.env.VITE_API_SERVER_URL;
+    const navigate = useNavigate();
+
+    const [form, setForm] = useState({ email: "", username: "", password: "" });
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        fetch(`${API_SERVER_URL}/api/auth/me`, { credentials: "include" })
+            .then(res => res.ok && navigate("/"))
+            .catch(() => {});
+    }, [navigate]);
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setForm(prev => ({ ...prev, [name]: value }));
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -13,23 +27,16 @@ export default function Register({ onRegister }) {
         setLoading(true);
 
         try {
-            const res = await fetch("http://localhost:5000/api/auth/register", {
+            const res = await fetch(`${API_SERVER_URL}/api/auth/register`, {
                 method: "POST",
                 credentials: "include",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ email, username, password }),
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(form),
             });
 
             const data = await res.json();
-
-            if (!res.ok) {
-                setError(data.error || "Registration failed");
-            } else {
-                onRegister(data);
-            }
-        } catch (err) {
+            res.ok ? onRegister(data) : setError(data.error || "Registration failed");
+        } catch {
             setError("Network error");
         } finally {
             setLoading(false);
@@ -37,32 +44,38 @@ export default function Register({ onRegister }) {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="auth-form">
-            <h2>Register</h2>
-            {error && <div className="error">{error}</div>}
+        <form onSubmit={handleSubmit} className="Register__form">
+            <h2 className="Register__title">Register</h2>
+            {error && <div className="Register__error">{error}</div>}
 
             <input
+                className="Register__input"
                 type="email"
+                name="email"
                 placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={form.email}
+                onChange={handleChange}
                 required
             />
             <input
+                className="Register__input"
                 type="text"
+                name="username"
                 placeholder="Username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                value={form.username}
+                onChange={handleChange}
                 required
             />
             <input
+                className="Register__input"
                 type="password"
+                name="password"
                 placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                value={form.password}
+                onChange={handleChange}
                 required
             />
-            <button type="submit" disabled={loading}>
+            <button className="Register__button" type="submit" disabled={loading}>
                 {loading ? "Registering..." : "Register"}
             </button>
         </form>

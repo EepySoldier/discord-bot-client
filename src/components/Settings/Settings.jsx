@@ -1,30 +1,7 @@
 import "./Settings.css"
 
 export default function Settings({ user }) {
-
-    const clips = user?.clips || [
-        { name: "FunnyFail.mp4" },
-        { name: "EpicWin.mp4" },
-        { name: "CoolScene.mp4" },
-        { name: "EpicWin.mp4" },
-        { name: "CoolScene.mp4" },
-        { name: "CoolScene.mp4" },
-        { name: "EpicWin.mp4" },
-        { name: "CoolScene.mp4" },
-        { name: "CoolScene.mp4" },
-        { name: "EpicWin.mp4" },
-        { name: "CoolScene.mp4" },
-        { name: "CoolScene.mp4" },
-        { name: "EpicWin.mp4" },
-        { name: "CoolScene.mp4" },
-        { name: "CoolScene.mp4" },
-        { name: "EpicWin.mp4" },
-        { name: "CoolScene.mp4" },
-        { name: "CoolScene.mp4" },
-        { name: "EpicWin.mp4" },
-        { name: "CoolScene.mp4" },
-
-    ];
+    const clips = user?.clips || Array(20).fill({ name: "CoolScene.mp4" });
 
     if (!user) {
         return <p className="login-required">Log in to manage your settings.</p>;
@@ -53,19 +30,13 @@ export default function Settings({ user }) {
                     {clips.length > 0 ? (
                         clips.map((clip, index) => (
                             <div className="settings__clip-card" key={index}>
-                                <div className="settings__clip-thumbnail">
-                                    {/* SVG */}
-                                </div>
+                                <div className="settings__clip-thumbnail" />
                                 <div className="settings__clip-info" title={clip.name}>
                                     {clip.name}
                                 </div>
                                 <div className="settings__clip-actions">
-                                    <button className="settings__btn-edit">
-                                        ✏️ Edit
-                                    </button>
-                                    <button className="settings__btn-danger">
-                                        🗑 Delete
-                                    </button>
+                                    <button className="settings__btn-edit">✏️ Edit</button>
+                                    <button className="settings__btn-danger">🗑 Delete</button>
                                 </div>
                             </div>
                         ))
@@ -76,5 +47,4 @@ export default function Settings({ user }) {
             </div>
         </div>
     );
-
 }

@@ -65,6 +65,7 @@ img[alt="avatar"] {
 
 /* ===== BUTTONS ===== */
 .btn {
+    text-decoration: none;
     padding: 0.4rem 0.8rem;
     border: none;
     border-radius: 6px;
@@ -80,8 +81,12 @@ img[alt="avatar"] {
 }
 
 .login-btn {
-    background-color: #5865f2;
+    background-color: #3f4dd1;
     color: #fff;
+}
+
+.login-btn:hover {
+    background-color: #616eea;
 }
 
 .logout-btn {
