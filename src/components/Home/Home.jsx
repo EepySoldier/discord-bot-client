@@ -1,4 +1,5 @@
 import {useState, useEffect, useContext} from "react";
+import VideoModal from "../VideoModal/VideoModal.jsx";
 import {UserContext} from "../../UserContext";
 
 function Home() {
@@ -103,39 +104,13 @@ function Home() {
                 ))}
             </div>
 
-            {/* MODAL */}
             {activeVideo && (
-                <div className="video-modal" onClick={closeModal}>
-                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                        <button className="close-btn" onClick={closeModal}>✖</button>
-
-                        {/* Left arrow */}
-                        {activeIndex > 0 && (
-                            <button className="nav-arrow left-arrow" onClick={showPrevVideo}>
-                                ←
-                            </button>
-                        )}
-
-                        <video
-                            controls
-                            autoPlay
-                            src={activeVideo.file_url}
-                            className="modal-video"
-                        />
-
-                        {/* Right arrow */}
-                        {activeIndex < sortedVideos.length - 1 && (
-                            <button className="nav-arrow right-arrow" onClick={showNextVideo}>
-                                →
-                            </button>
-                        )}
-
-                        <div className="modal-meta">
-                            <span>Uploaded by: {activeVideo.uploader}</span>
-                            <span>Date: {new Date(activeVideo.uploaded_at).toLocaleDateString()}</span>
-                        </div>
-                    </div>
-                </div>
+                <VideoModal
+                    video={activeVideo}
+                    onClose={closeModal}
+                    onPrev={activeIndex > 0 ? showPrevVideo : null}
+                    onNext={activeIndex < sortedVideos.length - 1 ? showNextVideo : null}
+                />
             )}
         </>
     );

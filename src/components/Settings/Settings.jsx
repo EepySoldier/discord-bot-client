@@ -1,11 +1,15 @@
 import { useState, useContext, useEffect } from "react";
 import { UserContext } from "../../UserContext";
+import VideoModal from "../VideoModal/VideoModal.jsx";
 import "./Settings.css";
 
 export default function Settings() {
+    const API_SERVER_URL = import.meta.env.VITE_API_SERVER_URL;
     const { user, setUser } = useContext(UserContext);
     const [uploading, setUploading] = useState(false);
     const [profilePicUrl, setProfilePicUrl] = useState("");
+    const [clips, setClips] = useState([]);
+    const [activeClipIndex, setActiveClipIndex] = useState(null);
 
     useEffect(() => {
         if (user?.profile_pic_url) {
@@ -13,7 +17,25 @@ export default function Settings() {
         }
     }, [user]);
 
-    const clips = user?.clips || Array(20).fill({ name: "CoolScene.mp4" });
+    useEffect(() => {
+        const fetchClips = async () => {
+            try {
+                const res = await fetch(`${API_SERVER_URL}/api/video/fetchByUser/${user.id}`, {
+                    credentials: "include",
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    setClips(data);
+                }
+            } catch (err) {
+                console.error("Failed to fetch user's clips", err);
+            }
+        };
+
+        if (user?.id) {
+            fetchClips();
+        }
+    }, [user]);
 
     async function handleProfilePicChange(e) {
         const file = e.target.files[0];
@@ -24,7 +46,7 @@ export default function Settings() {
         formData.append("profilePic", file);
 
         try {
-            const res = await fetch("http://localhost:5000/api/user/profile-pic", {
+            const res = await fetch(`${API_SERVER_URL}/api/user/profile-pic`, {
                 method: "POST",
                 credentials: "include",
                 body: formData,
@@ -32,7 +54,6 @@ export default function Settings() {
             const data = await res.json();
             if (data.success) {
                 setProfilePicUrl(data.profilePicUrl);
-                // Update user in context
                 setUser(prev => ({ ...prev, profile_pic_url: data.profilePicUrl }));
             } else {
                 alert(data.error || "Upload failed");
@@ -43,6 +64,20 @@ export default function Settings() {
             setUploading(false);
         }
     }
+
+    const handleClipClick = (index) => {
+        setActiveClipIndex(index);
+    };
+
+    const closeModal = () => setActiveClipIndex(null);
+
+    const handlePrev = () => {
+        setActiveClipIndex((prev) => (prev > 0 ? prev - 1 : prev));
+    };
+
+    const handleNext = () => {
+        setActiveClipIndex((prev) => (prev < clips.length - 1 ? prev + 1 : prev));
+    };
 
     if (!user) {
         return <p className="login-required">Log in to manage your settings.</p>;
@@ -94,10 +129,19 @@ export default function Settings() {
                 <div className="settings__clip-scroll-container">
                     {clips.length > 0 ? (
                         clips.map((clip, index) => (
-                            <div className="settings__clip-card" key={index}>
-                                <div className="settings__clip-thumbnail" />
-                                <div className="settings__clip-info" title={clip.name}>
-                                    {clip.name}
+                            <div
+                                className="settings__clip-card"
+                                key={index}
+                                onClick={() => handleClipClick(index)}
+                            >
+                                <video
+                                    src={clip.file_url}
+                                    className="settings__clip-thumbnail"
+                                    muted
+                                    preload="metadata"
+                                />
+                                <div className="settings__clip-info" title={clip.title}>
+                                    {clip.title}
                                 </div>
                                 <div className="settings__clip-actions">
                                     <button className="settings__btn-edit">✏️ Edit</button>
@@ -110,6 +154,15 @@ export default function Settings() {
                     )}
                 </div>
             </div>
+
+            {activeClipIndex !== null && (
+                <VideoModal
+                    video={clips[activeClipIndex]}
+                    onClose={closeModal}
+                    onPrev={activeClipIndex > 0 ? handlePrev : null}
+                    onNext={activeClipIndex < clips.length - 1 ? handleNext : null}
+                />
+            )}
         </div>
     );
 }
