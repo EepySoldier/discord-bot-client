@@ -112,48 +112,59 @@ select {
 /* ===== VIDEO CARDS ===== */
 .videos {
     display: grid;
-    gap: 1.5rem;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1rem;
 }
 
 .video-card {
     background-color: #1b1b1b;
-    padding: 1rem;
     border-radius: 10px;
     box-shadow: 0 3px 8px rgba(0, 0, 0, 0.5);
-}
-
-.video-card h3 {
-    font-size: 1.2rem;
-    margin-bottom: 0.5rem;
-}
-
-.video-title {
-    font-size: 1.3rem;
-    font-weight: 600;
-    color: #ffffff;
-    margin-bottom: 0.25rem;
-}
-
-.video-meta {
+    overflow: hidden;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.85rem;
-    color: #b0b0b0;
-    margin-bottom: 1rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid #2a2a2a;
+    flex-direction: column;
+    /* height: auto; */
+    max-width: 180px; /* optional max width for reel card */
 }
 
-.video-meta span {
-    display: flex;
-    align-items: center;
-    gap: 4px;
+.video-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 9 / 16;
+    overflow: hidden;
+    border-radius: 10px 10px 0 0;
 }
 
 .video-wrapper video {
     width: 100%;
-    border-radius: 6px;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.video-meta {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    /* Use a transparent black with backdrop blur */
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    padding: 0.4rem 0.6rem;
+    color: #f1f1f1;
+    display: flex;
+    justify-content: space-between;
+    border-radius: 0 0 0 0px;
+    font-size: 0.75rem;
+}
+
+.video-meta span {
+    text-shadow: 0 0 5px rgba(0,0,0,0.7);
+}
+
+.video-title {
+    display: none; /* hide title for compact reel style */
 }
 
 /* ===== MESSAGES ===== */

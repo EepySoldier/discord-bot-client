@@ -1,131 +1,21 @@
-import { useState, useEffect, useContext } from "react";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+// src/App.jsx
+import { useState, useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+
+import { UserContext } from "./UserContext";
+
+import Header from "./components/Header/Header.jsx";
+import Home from "./components/Home/Home.jsx";
 import Settings from "./components/Settings/Settings.jsx";
 import Login from "./components/Login/Login.jsx";
 import Register from "./components/Register/Register.jsx";
-import { UserContext } from "./UserContext";
+
 import "./App.css";
-
-function Header() {
-    const API_SERVER_URL = import.meta.env.VITE_API_SERVER_URL;
-    const { user, setUser } = useContext(UserContext);
-
-    const handleLogout = async () => {
-        await fetch(`${API_SERVER_URL}/api/auth/logout`, {
-            method: "POST",
-            credentials: "include",
-        });
-        setUser(null);
-    };
-
-    return (
-        <nav className="navbar">
-            <div className="navbar-left">
-                <Link to="/" className="logo-link" style={{ textDecoration: "none", color: "inherit" }}>
-                    <h1>🎥 Clip Archive</h1>
-                </Link>
-            </div>
-            <div className="navbar-right">
-                {user ? (
-                    <>
-                        <Link
-                            to="/settings"
-                            className="user-info"
-                            style={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "8px",
-                                textDecoration: "none",
-                                color: "inherit",
-                            }}
-                        >
-                            {user.profile_pic_url === "" ? (
-                                <div className="avatar-placeholder">{user.username[0]}</div>
-                            ) : (
-                                <img alt="avatar" className="avatar" src={user.profile_pic_url} />
-                            )}
-                            <span>{user.username}</span>
-                        </Link>
-                        <button className="btn logout-btn" onClick={handleLogout}>
-                            Logout
-                        </button>
-                    </>
-                ) : (
-                    <>
-                        <Link to="/login" className="btn login-btn">
-                            Login
-                        </Link>
-                        <Link to="/register" className="btn register-btn">
-                            Register
-                        </Link>
-                    </>
-                )}
-            </div>
-        </nav>
-    );
-}
-
-function Home() {
-    const { user } = useContext(UserContext);
-    const API_SERVER_URL = import.meta.env.VITE_API_SERVER_URL;
-    const dummyVideos = [
-        {
-            id: "1",
-            title: "Epic Moment",
-            file_url: "/videos/sample1.mp4",
-            uploaded_at: new Date().toISOString(),
-            uploader: "alice",
-        },
-        {
-            id: "2",
-            title: "Funny Fail",
-            file_url: "/videos/sample2.mp4",
-            uploaded_at: new Date().toISOString(),
-            uploader: "bob",
-        },
-    ];
-
-    if (!user) {
-        return <p className="login-required">Please log in to view or upload videos.</p>;
-    }
-
-    return (
-        <>
-            <div className="controls">
-                <label htmlFor="sort-select">Sort by date:</label>
-                <select id="sort-select" defaultValue="desc">
-                    <option value="desc">Newest First</option>
-                    <option value="asc">Oldest First</option>
-                </select>
-            </div>
-
-            <div className="videos">
-                {dummyVideos.map((video) => (
-                    <div className="video-card" key={video.id}>
-                        <h3 className="video-title">{video.title}</h3>
-                        <div className="video-meta">
-                            <span className="video-date">📅 {new Date(video.uploaded_at).toLocaleString()}</span>
-                            <span className="video-uploader">👤 {video.uploader}</span>
-                        </div>
-                        <div className="video-wrapper">
-                            <video width="100%" controls preload="metadata">
-                                <source src={video.file_url} type="video/mp4"/>
-                                Your browser does not support the video tag.
-                            </video>
-                        </div>
-                    </div>
-                ))}
-            </div>
-        </>
-    );
-}
 
 function App() {
     const API_SERVER_URL = import.meta.env.VITE_API_SERVER_URL;
-
     const [user, setUser] = useState(null);
 
-    // On mount, check if user is already logged in via session
     useEffect(() => {
         (async () => {
             try {
@@ -137,24 +27,24 @@ function App() {
                     setUser(data);
                 }
             } catch (err) {
-
+                // handle error if needed
             }
         })();
     }, []);
 
     return (
         <UserContext.Provider value={{ user, setUser }}>
-        <Router>
-            <Header />
-            <main className="container">
-                <Routes>
-                    <Route path="/" element={<Home />} />
-                    <Route path="/settings" element={<Settings />} />
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/register" element={<Register />} />
-                </Routes>
-            </main>
-        </Router>
+            <Router>
+                <Header />
+                <main className="container">
+                    <Routes>
+                        <Route path="/" element={<Home />} />
+                        <Route path="/settings" element={<Settings />} />
+                        <Route path="/login" element={<Login />} />
+                        <Route path="/register" element={<Register />} />
+                    </Routes>
+                </main>
+            </Router>
         </UserContext.Provider>
     );
 }
