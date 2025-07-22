@@ -16,10 +16,19 @@ function Header() {
 
     return (
         <nav className="navbar">
-            <div className="navbar-left">
-                <Link to="/" className="logo-link" style={{ textDecoration: "none", color: "inherit" }}>
+            <div className="navbar-left" style={{display: "flex", alignItems: "center", gap: "20px"}}>
+                <Link to="/" className="logo-link" style={{textDecoration: "none", color: "inherit"}}>
                     <h1>🎥 Clip Archive</h1>
                 </Link>
+                {user && (
+                    <Link
+                        to="/upload"
+                        className="upload-link"
+                        style={{textDecoration: "none", color: "inherit", fontWeight: "500"}}
+                    >
+                        Upload Clips
+                    </Link>
+                )}
             </div>
             <div className="navbar-right">
                 {user ? (

@@ -9,6 +9,7 @@ import Home from "./components/Home/Home.jsx";
 import Settings from "./components/Settings/Settings.jsx";
 import Login from "./components/Login/Login.jsx";
 import Register from "./components/Register/Register.jsx";
+import Upload from "./components/Upload/Upload.jsx";
 
 import "./App.css";
 
@@ -42,6 +43,7 @@ function App() {
                         <Route path="/settings" element={<Settings />} />
                         <Route path="/login" element={<Login />} />
                         <Route path="/register" element={<Register />} />
+                        <Route path="/upload" element={<Upload />} />
                     </Routes>
                 </main>
             </Router>
