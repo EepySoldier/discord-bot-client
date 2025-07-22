@@ -1,10 +1,12 @@
 import "./Register.css";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { UserContext } from "../../UserContext";
 
-export default function Register({ onRegister }) {
+export default function Register() {
     const API_SERVER_URL = import.meta.env.VITE_API_SERVER_URL;
     const navigate = useNavigate();
+    const { setUser } = useContext(UserContext);
 
     const [form, setForm] = useState({ email: "", username: "", password: "" });
     const [error, setError] = useState(null);
@@ -35,7 +37,12 @@ export default function Register({ onRegister }) {
             });
 
             const data = await res.json();
-            res.ok ? onRegister(data) : setError(data.error || "Registration failed");
+            if (res.ok) {
+                setUser(data); // ⬅️ Use context instead of prop
+                navigate("/");
+            } else {
+                setError(data.error || "Registration failed");
+            }
         } catch {
             setError("Network error");
         } finally {

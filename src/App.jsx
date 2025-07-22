@@ -1,12 +1,23 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import Settings from "./components/Settings/Settings.jsx";
 import Login from "./components/Login/Login.jsx";
 import Register from "./components/Register/Register.jsx";
+import { UserContext } from "./UserContext";
 import "./App.css";
 
-function Header({ user, onLogout }) {
+function Header() {
     const API_SERVER_URL = import.meta.env.VITE_API_SERVER_URL;
+    const { user, setUser } = useContext(UserContext);
+
+    const handleLogout = async () => {
+        await fetch(`${API_SERVER_URL}/api/auth/logout`, {
+            method: "POST",
+            credentials: "include",
+        });
+        setUser(null);
+    };
+
     return (
         <nav className="navbar">
             <div className="navbar-left">
@@ -28,19 +39,14 @@ function Header({ user, onLogout }) {
                                 color: "inherit",
                             }}
                         >
-                            <div className="avatar-placeholder">{user.username[0]}</div>
+                            {user.profile_pic_url === "" ? (
+                                <div className="avatar-placeholder">{user.username[0]}</div>
+                            ) : (
+                                <img alt="avatar" className="avatar" src={user.profile_pic_url} />
+                            )}
                             <span>{user.username}</span>
                         </Link>
-                        <button
-                            className="btn logout-btn"
-                            onClick={async () => {
-                                await fetch(`${API_SERVER_URL}/api/auth/logout`, {
-                                    method: "POST",
-                                    credentials: "include",
-                                });
-                                onLogout();
-                            }}
-                        >
+                        <button className="btn logout-btn" onClick={handleLogout}>
                             Logout
                         </button>
                     </>
@@ -59,7 +65,8 @@ function Header({ user, onLogout }) {
     );
 }
 
-function Home({ user }) {
+function Home() {
+    const { user } = useContext(UserContext);
     const API_SERVER_URL = import.meta.env.VITE_API_SERVER_URL;
     const dummyVideos = [
         {
@@ -136,17 +143,19 @@ function App() {
     }, []);
 
     return (
+        <UserContext.Provider value={{ user, setUser }}>
         <Router>
-            <Header user={user} onLogout={() => setUser(null)} />
+            <Header />
             <main className="container">
                 <Routes>
-                    <Route path="/" element={<Home user={user} />} />
-                    <Route path="/settings" element={<Settings user={user} />} />
-                    <Route path="/login" element={<Login onLogin={setUser} />} />
-                    <Route path="/register" element={<Register onRegister={setUser} />} />
+                    <Route path="/" element={<Home />} />
+                    <Route path="/settings" element={<Settings />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/register" element={<Register />} />
                 </Routes>
             </main>
         </Router>
+        </UserContext.Provider>
     );
 }
 

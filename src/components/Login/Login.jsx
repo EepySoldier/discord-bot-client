@@ -1,10 +1,12 @@
 import "./Login.css";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { UserContext } from "../../UserContext";
 
-export default function Login({ onLogin }) {
+export default function Login() {
     const API_SERVER_URL = import.meta.env.VITE_API_SERVER_URL;
     const navigate = useNavigate();
+    const { setUser } = useContext(UserContext);
 
     const [emailOrUsername, setEmailOrUsername] = useState("");
     const [password, setPassword] = useState("");
@@ -31,7 +33,7 @@ export default function Login({ onLogin }) {
             if (!res.ok) {
                 setError(data.error || "Login failed");
             } else {
-                onLogin(data);
+                setUser(data); // ⬅️ Use context directly
                 navigate("/");
             }
         } catch {
