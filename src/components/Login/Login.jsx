@@ -61,6 +61,7 @@ export default function Login() {
                 value={credentials.identifier}
                 onChange={handleChange}
                 required
+                autoComplete="off"
             />
 
             <input

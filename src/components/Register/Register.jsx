@@ -63,6 +63,7 @@ export default function Register() {
                 value={formData.email}
                 onChange={handleChange}
                 required
+                autoComplete="off"
             />
             <input
                 className="Register__input"
@@ -72,6 +73,7 @@ export default function Register() {
                 value={formData.username}
                 onChange={handleChange}
                 required
+                autoComplete="off"
             />
             <input
                 className="Register__input"

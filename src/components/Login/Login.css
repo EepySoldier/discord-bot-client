@@ -21,12 +21,14 @@
 
 .Login__input {
     padding: 14px 16px;
-    border: none;
+    border: 1.5px solid #3a3a3a;
     border-radius: 12px;
-    background: #3a3a4f;
+    background: #2a2a2a;
     color: #fff;
     font-size: 1rem;
     outline: none;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+    font-family: inherit;
 }
 
 .Login__input::placeholder {
@@ -34,7 +36,8 @@
 }
 
 .Login__input:focus {
-    box-shadow: 0 0 0 2px #7aa6ff;
+    border-color: #4f8cff;
+    box-shadow: 0 0 6px #4f8cff;
 }
 
 .Login__button {
