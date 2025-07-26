@@ -1,46 +1,47 @@
 import { useState, useContext } from "react";
 import { UserContext } from "../../UserContext";
 import { useNavigate } from "react-router-dom";
-import "./Upload.css"
+import "./Upload.css";
 
-function Upload() {
-    const API_SERVER_URL = import.meta.env.VITE_API_SERVER_URL;
+export default function Upload() {
+    const API_URL = import.meta.env.VITE_API_SERVER_URL;
     const { user } = useContext(UserContext);
     const navigate = useNavigate();
 
-    const [title, setTitle] = useState("");
-    const [file, setFile] = useState(null);
-    const [message, setMessage] = useState("");
+    const [clipTitle, setClipTitle] = useState("");
+    const [videoFile, setVideoFile] = useState(null);
+    const [statusMessage, setStatusMessage] = useState("");
 
-    const handleUpload = async (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!file || !title) {
-            return setMessage("Title and file are required.");
+        if (!clipTitle || !videoFile) {
+            setStatusMessage("Title and file are required.");
+            return;
         }
 
         const formData = new FormData();
-        formData.append("title", title);
-        formData.append("video", file);
+        formData.append("title", clipTitle);
+        formData.append("video", videoFile);
 
         try {
-            const res = await fetch(`${API_SERVER_URL}/api/upload/video`, {
+            const res = await fetch(`${API_URL}/api/upload/video`, {
                 method: "POST",
-                body: formData,
                 credentials: "include",
+                body: formData,
             });
 
             if (res.ok) {
-                setMessage("Clip uploaded successfully!");
-                setTitle("");
-                setFile(null);
+                setStatusMessage("Clip uploaded successfully!");
+                setClipTitle("");
+                setVideoFile(null);
                 navigate("/");
             } else {
-                const err = await res.json();
-                setMessage(err.error || "Upload failed.");
+                const errorData = await res.json();
+                setStatusMessage(errorData.error || "Upload failed.");
             }
-        } catch (err) {
-            setMessage("Something went wrong.");
+        } catch {
+            setStatusMessage("Something went wrong.");
         }
     };
 
@@ -49,25 +50,23 @@ function Upload() {
     return (
         <div className="upload-page">
             <h2>Upload New Clip</h2>
-            <form onSubmit={handleUpload}>
+            <form onSubmit={handleSubmit}>
                 <input
                     type="text"
                     placeholder="Clip title"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
+                    value={clipTitle}
+                    onChange={(e) => setClipTitle(e.target.value)}
                     required
                 />
                 <input
                     type="file"
                     accept="video/mp4"
-                    onChange={(e) => setFile(e.target.files[0])}
+                    onChange={(e) => setVideoFile(e.target.files[0])}
                     required
                 />
                 <button type="submit">Upload</button>
             </form>
-            {message && <p>{message}</p>}
+            {statusMessage && <p>{statusMessage}</p>}
         </div>
     );
 }
-
-export default Upload;

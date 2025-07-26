@@ -1,62 +1,53 @@
-import {useState, useEffect, useContext} from "react";
+import { useState, useEffect, useContext } from "react";
 import VideoModal from "../VideoModal/VideoModal.jsx";
-import {UserContext} from "../../UserContext";
+import VideoThumbnail from "../VideoThumbnail/VideoThumbnail.jsx";
+import { UserContext } from "../../UserContext";
 
-function Home() {
-    const API_SERVER_URL = import.meta.env.VITE_API_SERVER_URL;
-    const {user} = useContext(UserContext);
+export default function Home() {
+    const API_URL = import.meta.env.VITE_API_SERVER_URL;
+    const { user } = useContext(UserContext);
+
     const [videos, setVideos] = useState([]);
-    const [sort, setSort] = useState("desc");
-    const [activeVideo, setActiveVideo] = useState(null);
-    const [activeIndex, setActiveIndex] = useState(null);
+    const [sortOrder, setSortOrder] = useState("desc");
+    const [selectedVideo, setSelectedVideo] = useState(null);
+    const [selectedIndex, setSelectedIndex] = useState(null);
+    const [hoveredVideoId, setHoveredVideoId] = useState(null);
+    const [isSeeking, setIsSeeking] = useState(false);
+    const [recentlyDraggedId, setRecentlyDraggedId] = useState(null);
 
     useEffect(() => {
-        const fetchVideos = async () => {
+        const loadVideos = async () => {
             try {
-                const res = await fetch(`${API_SERVER_URL}/api/video/fetchAll`, {
+                const res = await fetch(`${API_URL}/api/video/fetchAll`, {
                     credentials: "include",
                 });
-                if (res.ok) {
-                    const data = await res.json();
-                    setVideos(data);
-                }
+                if (res.ok) setVideos(await res.json());
             } catch (err) {
                 console.error("Failed to load videos", err);
             }
         };
-        fetchVideos();
-    }, []);
+        loadVideos();
+    }, [API_URL]);
 
-    const sortedVideos = [...videos].sort((a, b) => {
-        return sort === "asc"
+    const sortedVideos = [...videos].sort((a, b) =>
+        sortOrder === "asc"
             ? new Date(a.uploaded_at) - new Date(b.uploaded_at)
-            : new Date(b.uploaded_at) - new Date(a.uploaded_at);
-    });
+            : new Date(b.uploaded_at) - new Date(a.uploaded_at)
+    );
 
-    const handleVideoClick = (video) => {
+    const openVideo = async (video) => {
+        try {
+            await fetch(`${API_URL}/api/video/${video.id}/view`, {
+                method: "POST",
+                credentials: "include",
+            });
+        } catch (err) {
+            console.error(err);
+        }
+
         const index = sortedVideos.findIndex((v) => v.id === video.id);
-        setActiveIndex(index);
-        setActiveVideo(video);
-    };
-
-    const closeModal = () => {
-        setActiveVideo(null);
-    };
-
-    const showPrevVideo = () => {
-        if (activeIndex > 0) {
-            const newIndex = activeIndex - 1;
-            setActiveIndex(newIndex);
-            setActiveVideo(sortedVideos[newIndex]);
-        }
-    };
-
-    const showNextVideo = () => {
-        if (activeIndex < sortedVideos.length - 1) {
-            const newIndex = activeIndex + 1;
-            setActiveIndex(newIndex);
-            setActiveVideo(sortedVideos[newIndex]);
-        }
+        setSelectedIndex(index);
+        setSelectedVideo(video);
     };
 
     if (!user) {
@@ -67,7 +58,11 @@ function Home() {
         <div className="Home">
             <div className="controls">
                 <label htmlFor="sort-select">Sort by date:</label>
-                <select id="sort-select" value={sort} onChange={(e) => setSort(e.target.value)}>
+                <select
+                    id="sort-select"
+                    value={sortOrder}
+                    onChange={(e) => setSortOrder(e.target.value)}
+                >
                     <option value="desc">Newest First</option>
                     <option value="asc">Oldest First</option>
                 </select>
@@ -76,43 +71,32 @@ function Home() {
             <div className="video-grid">
                 {sortedVideos.map((video) => (
                     <div
-                        className="video-card"
                         key={video.id}
-                        onClick={() => handleVideoClick(video)}
+                        className="video-card"
+                        onMouseEnter={() => setHoveredVideoId(video.id)}
+                        onMouseLeave={() => !isSeeking && setHoveredVideoId(null)}
+                        onClick={() => {
+                            if (recentlyDraggedId === video.id) {
+                                setRecentlyDraggedId(null);
+                                return;
+                            }
+                            if (!isSeeking) openVideo(video);
+                        }}
                     >
-                        <div className="thumbnail-container">
-                            <video
-                                muted
-                                preload="metadata"
-                                className="thumbnail"
-                                onMouseEnter={(e) => e.currentTarget.play()}
-                                onMouseLeave={(e) => {
-                                    e.currentTarget.pause();
-                                    e.currentTarget.currentTime = 0;
-                                }}
-                                onLoadedMetadata={(e) => {
-                                    const duration = e.currentTarget.duration;
-                                    const span = e.currentTarget.nextElementSibling;
-                                    if (span) {
-                                        const minutes = Math.floor(duration / 60);
-                                        const seconds = Math.floor(duration % 60)
-                                            .toString()
-                                            .padStart(2, "0");
-                                        span.textContent = `${minutes}:${seconds}`;
-                                    }
-                                }}
-                            >
-                                <source src={video.file_url} type="video/mp4"/>
-                                Your browser does not support the video tag.
-                            </video>
-
-                            <span className="video-duration">0:00</span>
-                        </div>
+                        <VideoThumbnail
+                            src={video.file_url}
+                            preview={hoveredVideoId === video.id}
+                            setIsSeeking={setIsSeeking}
+                            setJustDraggedId={setRecentlyDraggedId}
+                            videoId={video.id}
+                        />
 
                         <div className="video-info">
                             <div className="video-header">
                                 <span className="video-title">{video.title || "Untitled Video"}</span>
-                                <span className="video-date">{new Date(video.uploaded_at).toLocaleDateString()}</span>
+                                <span className="video-date">
+                  {new Date(video.uploaded_at).toLocaleDateString("en-GB")}
+                </span>
                             </div>
 
                             <span className="video-uploader">Uploaded by: {video.uploader}</span>
@@ -123,24 +107,48 @@ function Home() {
                             </div>
 
                             <div className="video-stats">
-                                <span>👁️ 1234</span>
-                                <span>❤️ 456</span>
+                                <span>👁️ {video.views ?? 0}</span>
+                                <span>❤️ {video.likes ?? 0}</span>
                             </div>
                         </div>
                     </div>
                 ))}
             </div>
 
-            {activeVideo && (
+            {selectedVideo && (
                 <VideoModal
-                    video={activeVideo}
-                    onClose={closeModal}
-                    onPrev={activeIndex > 0 ? showPrevVideo : null}
-                    onNext={activeIndex < sortedVideos.length - 1 ? showNextVideo : null}
+                    video={selectedVideo}
+                    onClose={() => setSelectedVideo(null)}
+                    onPrev={
+                        selectedIndex > 0
+                            ? () => {
+                                const prevIndex = selectedIndex - 1;
+                                setSelectedIndex(prevIndex);
+                                setSelectedVideo(sortedVideos[prevIndex]);
+                            }
+                            : null
+                    }
+                    onNext={
+                        selectedIndex < sortedVideos.length - 1
+                            ? () => {
+                                const nextIndex = selectedIndex + 1;
+                                setSelectedIndex(nextIndex);
+                                setSelectedVideo(sortedVideos[nextIndex]);
+                            }
+                            : null
+                    }
+                    onLikeToggle={(liked, newLikes) => {
+                        setVideos((prev) =>
+                            prev.map((v) =>
+                                v.id === selectedVideo.id
+                                    ? { ...v, liked_by_me: liked, likes: newLikes }
+                                    : v
+                            )
+                        );
+                        setSelectedVideo((v) => ({ ...v, liked_by_me: liked, likes: newLikes }));
+                    }}
                 />
             )}
         </div>
     );
 }
-
-export default Home;

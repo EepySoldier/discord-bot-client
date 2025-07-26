@@ -1,4 +1,3 @@
-// src/App.jsx
 import { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
@@ -14,24 +13,22 @@ import Upload from "./components/Upload/Upload.jsx";
 import "./App.css";
 
 function App() {
-    const API_SERVER_URL = import.meta.env.VITE_API_SERVER_URL;
+    const apiUrl = import.meta.env.VITE_API_SERVER_URL;
     const [user, setUser] = useState(null);
 
     useEffect(() => {
         (async () => {
             try {
-                const res = await fetch(`${API_SERVER_URL}/api/auth/me`, {
+                const response = await fetch(`${apiUrl}/api/auth/me`, {
                     credentials: "include",
                 });
-                if (res.ok) {
-                    const data = await res.json();
-                    setUser(data);
+                if (response.ok) {
+                    const userData = await response.json();
+                    setUser(userData);
                 }
-            } catch (err) {
-                // handle error if needed
-            }
+            } catch {}
         })();
-    }, []);
+    }, [apiUrl]);
 
     return (
         <UserContext.Provider value={{ user, setUser }}>

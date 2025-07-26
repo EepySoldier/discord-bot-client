@@ -20,48 +20,25 @@ function Header() {
                 <Link to="/" className="logo-link">
                     <h1>Clip Archive</h1>
                 </Link>
-                {user && (
-                    <Link
-                        to="/upload"
-                        className="upload-link"
-                    >
-                        Upload Clips
-                    </Link>
-                )}
+                {user && <Link to="/upload" className="upload-link">Upload Clips</Link>}
             </div>
             <div className="navbar-right">
                 {user ? (
                     <>
-                        <Link
-                            to="/settings"
-                            className="user-info"
-                            style={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "8px",
-                                textDecoration: "none",
-                                color: "inherit",
-                            }}
-                        >
-                            {user.profile_pic_url === "" ? (
-                                <div className="avatar-placeholder">{user.username[0]}</div>
-                            ) : (
+                        <Link to="/settings" className="user-info" style={{ display: "flex", alignItems: "center", gap: "8px", textDecoration: "none", color: "inherit" }}>
+                            {user.profile_pic_url ? (
                                 <img alt="avatar" className="avatar" src={user.profile_pic_url} />
+                            ) : (
+                                <div className="avatar-placeholder">{user.username[0]}</div>
                             )}
                             <span>{user.username}</span>
                         </Link>
-                        <button className="btn logout-btn" onClick={handleLogout}>
-                            Logout
-                        </button>
+                        <button className="btn logout-btn" onClick={handleLogout}>Logout</button>
                     </>
                 ) : (
                     <>
-                        <Link to="/login" className="btn login-btn">
-                            Login
-                        </Link>
-                        <Link to="/register" className="btn register-btn">
-                            Register
-                        </Link>
+                        <Link to="/login" className="btn login-btn">Login</Link>
+                        <Link to="/register" className="btn register-btn">Register</Link>
                     </>
                 )}
             </div>

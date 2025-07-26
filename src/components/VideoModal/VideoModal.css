@@ -18,6 +18,7 @@
 .modal-content {
     position: relative;
     background: #100f0f;
+    margin-top: 3.5vw;
     padding: 1.5rem;
     border-radius: 12px;
     max-width: 60vw;
@@ -110,4 +111,8 @@
     background: rgba(255, 255, 255, 0.1);
     padding: 4px 8px;
     border-radius: 6px;
+}
+
+.like-btn {
+    cursor: pointer;
 }

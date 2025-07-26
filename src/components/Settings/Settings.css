@@ -39,16 +39,6 @@
     margin-bottom: 0.5rem;
 }
 
-.settings__clip-scroll-container {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1rem;
-    padding-right: 0.5rem;
-    scrollbar-width: thin;
-    scrollbar-color: #555 transparent;
-    -webkit-overflow-scrolling: touch;
-}
-
 .settings__clip-scroll-container::-webkit-scrollbar {
     width: 8px;
     height: 0;
@@ -63,81 +53,109 @@
     border-radius: 4px;
 }
 
-.settings__clip-thumbnail {
-    width: 100%;
-    max-height: 100px;
-    border-radius: 6px;
-    object-fit: cover;
-    background-color: #000;
+.settings__clip-scroll-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-top: 1rem;
 }
 
 .settings__clip-card {
-    background-color: #1c1c1c;
-    backdrop-filter: blur(4px);
-    border: 1px solid #2a2a2a;
+    background-color: #1f1f1f;
     border-radius: 8px;
-    padding: 0.6rem 1rem;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: space-evenly;
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.5);
-    transition: transform 0.2s ease;
-    cursor: pointer;
-    height: auto;
+}
+
+.settings__clip-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.7);
+}
+
+.settings__thumbnail-container {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: #000;
 }
 
 .settings__clip-thumbnail {
-    margin-bottom: 0.6rem;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.settings__video-duration {
+    position: absolute;
+    top: 0.3rem;
+    right: 0.3rem;
+    background: rgba(0,0,0,0.75);
+    color: #fff;
+    font-size: 0.65rem;
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    pointer-events: none;
 }
 
 .settings__clip-info {
+    padding: 0.6rem;
     font-size: 0.95rem;
     font-weight: 600;
     color: #eee;
-    margin-bottom: 0.8rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    width: 100%;
-    text-align: center;
+}
+
+.settings__clip-meta {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 0.6rem;
+    font-size: 0.8rem;
+    color: #bbb;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    margin-bottom: 0.5rem;
 }
 
 .settings__clip-actions {
     display: flex;
-    gap: 0.6rem;
-    width: 100%;
-    justify-content: center;
+    gap: 0.5rem;
+    padding: 0 0.6rem 0.8rem;
 }
 
 .settings__btn-edit,
 .settings__btn-danger {
-    color: #fff;
-    padding: 0.3rem 0.7rem;
-    border-radius: 5px;
+    flex: 1;
+    padding: 0.4rem 0;
+    border-radius: 6px;
     border: none;
-    cursor: pointer;
+    font-size: 0.85rem;
     font-weight: 500;
-    transition: background-color 0.2s ease;
+    cursor: pointer;
+    transition: background-color 0.2s;
 }
 
 .settings__btn-edit {
-    background-color: #2a6fdb;
+    background-color: #326fd1;
+    color: #fff;
 }
 
 .settings__btn-edit:hover {
-    background-color: #3b85ff;
+    background-color: #4b8ef0;
 }
 
 .settings__btn-danger {
-    background-color: #8b1e24;
+    background-color: #a22a2e;
+    color: #fff;
 }
 
 .settings__btn-danger:hover {
-    background-color: #a32a2f;
+    background-color: #c33b42;
 }
-
-/*New*/
 
 /* === Profile Picture Section === */
 
@@ -213,6 +231,3 @@
     cursor: not-allowed;
     opacity: 0.6;
 }
-
-
-
